@@ -1,0 +1,4 @@
+taskmq:
+  broker: "redis://localhost:6379"
+  queue: "emqx-bc-tasksmq"
+  heartbeat: false
