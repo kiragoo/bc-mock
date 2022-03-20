@@ -1,20 +1,29 @@
 package main
 
 import (
-	"encoding/json"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
-	"strconv"
-	"time"
 
 	"github.com/emqx/emqx-bc-asynctasks/role"
 	"github.com/emqx/emqx-bc-asynctasks/task"
 	"github.com/emqx/emqx-bc-asynctasks/taskmq"
-	"github.com/emqx/emqx-operator/apis/apps/v1beta2"
+	"github.com/manifoldco/promptui"
 	"gopkg.in/yaml.v2"
 )
+
+var logger *log.Logger
+
+func init() {
+	writer1, err := os.OpenFile("logger.txt", os.O_WRONLY|os.O_CREATE, 0755)
+	writer2 := os.Stdout
+	if err != nil {
+		log.Fatalf("create file logger.txt failed: %v", err)
+	}
+
+	logger = log.New(io.MultiWriter(writer1, writer2), "", log.Lshortfile|log.LstdFlags)
+}
 
 type Config struct {
 	TaskMqConfig *taskmq.BCAsyncTaskConfig `yaml:"taskmq"`
@@ -33,123 +42,63 @@ func getConfig(file string) *taskmq.BCAsyncTaskConfig {
 	return cfg.TaskMqConfig
 }
 
-func getKubeConfig() []byte {
-	config, err := os.ReadFile(filepath.Join(os.Getenv("HOME"), ".kube", "config"))
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return config
+var tasks = map[string]interface{}{
+	task.TASK_EMQX_CLUSTER_UPDATE: emqxClusterStatus,
+	task.RECALL_KUBECONFIG:        pullKubeConfigs,
+	task.TASK_BC_UPDATE_TASK:      deploymentStatus,
 }
 
-func sendKubeConfig(id uint64) {
-	msg := &task.KubeConfig{
-		Configs: map[string][]byte{"cluster-" + strconv.FormatUint(id, 10): getKubeConfig()},
-	}
-	task.SendKubeConfig(msg)
-}
-
-func createDeployment(id uint64, ns string) {
-	msg := &task.Task{
-		TaskID:           id,
-		Type:             task.TaskCreateDeployment,
-		Namespace:        ns,
-		ClusterID:        "cluster-" + strconv.FormatUint(id, 10),
-		Image:            "emqx/emqx-ee:4.4.0",
-		Replicas:         3,
-		StorageClassName: "standard",
-		StorageClassSize: "20Mi",
-		// Labels: map[string]string{
-		// 	"cluster": "emqx",
-		// },
-		Env: map[string]string{
-			"EMQX_CLUSTER__K8S__NAMESPACE": ns,
-		},
-		Certificate: generateCertificate(),
-		License:     []byte(LIC),
-	}
-	task.Deploy(msg)
-}
-
-func stopDeployment(id uint64, ns string) {
-	msg := &task.Task{
-		TaskID:    id,
-		Type:      task.TaskStopDeployment,
-		Namespace: ns,
-		ClusterID: "cluster-" + strconv.FormatUint(id, 10),
-	}
-	task.Deploy(msg)
-}
-
-func deleteDeployment(id uint64, ns string) {
-	msg := &task.Task{
-		TaskID:    id,
-		Type:      task.TaskDeleteDeployment,
-		Namespace: ns,
-		Replicas:  3,
-		ClusterID: "cluster-" + strconv.FormatUint(id, 10),
-	}
-	task.Deploy(msg)
-}
-
-func startDeployment(id uint64, ns string) {
-	msg := &task.Task{
-		TaskID:           id,
-		Type:             task.TaskStartDeployment,
-		Namespace:        ns,
-		ClusterID:        "cluster-" + strconv.FormatUint(id, 10),
-		Image:            "emqx/emqx-ee:4.4.0",
-		Replicas:         3,
-		StorageClassName: "standard",
-		StorageClassSize: "20Mi",
-		Env: map[string]string{
-			"EMQX_CLUSTER__K8S__NAMESPACE": ns,
-		},
-		// Status: task.DeploymentNotStarted,
-	}
-	task.Deploy(msg)
-}
-
-type Cluster struct {
-}
-
-func (c *Cluster) SubEmqxClusterStatus(status []byte) error {
-	s := task.EmqxClusterStatus{}
-
-	if err := json.Unmarshal(status, &s); err != nil {
-		panic(err.Error())
-	}
-
-	log.Printf("---- emqx status: %+v\n", s)
-	return nil
+var taskList = map[string]interface{}{
+	SEND_KUBE_CONFIG:   sendKubeConfig,
+	CREATE_DEPLOYMENT:  createDeployment,
+	STOP_DEPLOYMENT:    stopDeployment,
+	START_DEPLOYMENT:   startDeployment,
+	DELETE_DEPLOYMENT:  deleteDeployment,
+	UPDATE_LICENSE:     updateLicense,
+	UPDATE_CERTIFICATE: updateCertificate,
+	UPDATE_IMAGE:       updateImage,
 }
 
 func main() {
 	config := getConfig("./conf.yaml")
 	taskmq.Server.CreateMachineryServer("test_worker", config)
 	role.RegisterDefaultTasks()
-	task.RegisterEmqxActions(&Cluster{})
+	taskmq.Server.RegisterTasks(tasks)
 
-	sendKubeConfig(1)
-	time.Sleep(time.Second * 2)
-	createDeployment(1, "emqx-1")
+	{
+		prompt := promptui.Select{
+			Label: "Select Tasks",
+			Items: []string{SEND_KUBE_CONFIG, CREATE_DEPLOYMENT, STOP_DEPLOYMENT, START_DEPLOYMENT, DELETE_DEPLOYMENT,
+				UPDATE_LICENSE, UPDATE_CERTIFICATE, UPDATE_IMAGE, EXIT},
+		}
 
-	// deleteDeployment(1, "emqx-1")
-	// stopDeployment(1, "emqx-1")
+		_, result, err := prompt.Run()
 
-	taskmq.Server.LaunchWorker(task.ROUTINGKEY_BC_TASKS)
-}
+		if err != nil {
+			logger.Printf("Prompt failed %v\n", err)
+			return
+		}
 
-func generateCertificate() v1beta2.Certificate {
-	certConf := v1beta2.CertificateConf{
-		StringData: v1beta2.CertificateStringData{
-			CaCert:  CA_CERT,
-			TLSCert: TLS_CERT,
-			TLSKey:  TLS_KEY,
-		},
-	}
-	return v1beta2.Certificate{
-		WSS:   certConf,
-		MQTTS: certConf,
+		switch result {
+		case SEND_KUBE_CONFIG:
+			taskList[SEND_KUBE_CONFIG].(func(uint64))(TASK_ID)
+		case CREATE_DEPLOYMENT:
+			taskList[CREATE_DEPLOYMENT].(func(uint64, string))(TASK_ID, NAMESPACE)
+		case STOP_DEPLOYMENT:
+			taskList[STOP_DEPLOYMENT].(func(uint64, string))(TASK_ID, NAMESPACE)
+		case START_DEPLOYMENT:
+			taskList[START_DEPLOYMENT].(func(uint64, string))(TASK_ID, NAMESPACE)
+		case DELETE_DEPLOYMENT:
+			taskList[DELETE_DEPLOYMENT].(func(uint64, string))(TASK_ID, NAMESPACE)
+		case UPDATE_LICENSE:
+			taskList[UPDATE_LICENSE].(func(uint64, string))(TASK_ID, NAMESPACE)
+		case UPDATE_CERTIFICATE:
+			taskList[UPDATE_CERTIFICATE].(func(uint64, string))(TASK_ID, NAMESPACE)
+		case UPDATE_IMAGE:
+			taskList[UPDATE_IMAGE].(func(uint64, string))(TASK_ID, NAMESPACE)
+		case EXIT:
+			return
+		}
+		taskmq.Server.LaunchWorker(task.ROUTINGKEY_BC_TASKS)
 	}
 }
