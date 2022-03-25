@@ -14,7 +14,9 @@ const (
 	UPDATE_LICENSE     = "UPDATE_LICENSE"
 	UPDATE_CERTIFICATE = "UPDATE_CERTIFICATE"
 	UPDATE_IMAGE       = "UPDATE_IMAGE"
-	EXIT               = "EXIT"
+	SCALE_UP           = "SCALE_UP"
+
+	EXIT = "EXIT"
 )
 
 const (

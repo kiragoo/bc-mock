@@ -1,6 +1,7 @@
 # Binaries for programs and plugins
 bc-mock
 logger.txt
+.DS_Store
 *.exe
 *.exe~
 *.dll

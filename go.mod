@@ -3,7 +3,7 @@ module bc-mock
 go 1.17
 
 require (
-	github.com/emqx/emqx-bc-asynctasks v0.0.0-20220318011458-61e7be83dfa6
+	github.com/emqx/emqx-bc-asynctasks v0.0.0-20220324034253-0a4efa1b39f3
 	github.com/emqx/emqx-operator v0.0.0-20220310101507-130a683bbaa1
 	github.com/manifoldco/promptui v0.9.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -29,6 +29,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.4 // indirect
 	github.com/go-redsync/redsync/v4 v4.5.0 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
+	github.com/go-yaml/yaml v2.1.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect

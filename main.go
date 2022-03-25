@@ -57,6 +57,7 @@ var taskList = map[string]interface{}{
 	UPDATE_LICENSE:     updateLicense,
 	UPDATE_CERTIFICATE: updateCertificate,
 	UPDATE_IMAGE:       updateImage,
+	SCALE_UP:           scaleUp,
 }
 
 func main() {
@@ -69,7 +70,7 @@ func main() {
 		prompt := promptui.Select{
 			Label: "Select Tasks",
 			Items: []string{SEND_KUBE_CONFIG, CREATE_DEPLOYMENT, STOP_DEPLOYMENT, START_DEPLOYMENT, DELETE_DEPLOYMENT,
-				UPDATE_LICENSE, UPDATE_CERTIFICATE, UPDATE_IMAGE, EXIT},
+				UPDATE_LICENSE, UPDATE_CERTIFICATE, UPDATE_IMAGE, SCALE_UP, EXIT},
 		}
 
 		_, result, err := prompt.Run()
@@ -96,6 +97,8 @@ func main() {
 			taskList[UPDATE_CERTIFICATE].(func(uint64, string))(TASK_ID, NAMESPACE)
 		case UPDATE_IMAGE:
 			taskList[UPDATE_IMAGE].(func(uint64, string))(TASK_ID, NAMESPACE)
+		case SCALE_UP:
+			taskList[SCALE_UP].(func(uint64, string))(TASK_ID, NAMESPACE)
 		case EXIT:
 			return
 		}

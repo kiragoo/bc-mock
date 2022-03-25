@@ -133,7 +133,17 @@ func updateImage(id uint64, ns string) {
 		ClusterID: "cluster-" + strconv.FormatUint(id, 10),
 	}
 	task.Deploy(msg)
+}
 
+func scaleUp(id uint64, ns string) {
+	msg := &task.Task{
+		TaskID:    id,
+		Type:      task.TaskScaleUpDeployment,
+		Namespace: ns,
+		ClusterID: "cluster-" + strconv.FormatUint(id, 10),
+		Replicas:  4,
+	}
+	task.Deploy(msg)
 }
 
 // helpers
