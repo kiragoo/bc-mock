@@ -42,13 +42,35 @@ func createDeployment(id uint64, ns string) {
 		// License:     []byte(LIC),
 		LogType: "external",
 		LogConfig: map[string]string{
-			"EsUrl":       "http://url",
+			"EsUrl":       "http://139.224.110.115:8080/es9200",
 			"EsUsername":  "esUsername",
 			"EsPassword":  "esPassword",
 			"EsIndexName": "EsIndexName",
 		},
 		MetricConfig: map[string]string{
-			"BCMetricGateway": "http://gateway",
+			"BCMetricGateway": "http://www.example.com/",
+		},
+		ResourceLimits: task.ResourceLimits{
+			Emqx: task.ResourceLimit{
+				Requests: task.ResourceQuota{
+					CPU:    "250m",
+					Memory: "100Mi",
+				},
+				Limits: task.ResourceQuota{
+					CPU:    "500m",
+					Memory: "200Mi",
+				},
+			},
+			Telegraf: task.ResourceLimit{
+				Requests: task.ResourceQuota{
+					CPU:    "250m",
+					Memory: "100Mi",
+				},
+				Limits: task.ResourceQuota{
+					CPU:    "1000m",
+					Memory: "200Mi",
+				},
+			},
 		},
 	}
 	task.Deploy(msg)
@@ -69,13 +91,35 @@ func startDeployment(id uint64, ns string) {
 		},
 		LogType: "external",
 		LogConfig: map[string]string{
-			"EsUrl":       "http://url",
+			"EsUrl":       "http://139.224.110.115:8080/es9200",
 			"EsUsername":  "esUsername",
 			"EsPassword":  "esPassword",
 			"EsIndexName": "EsIndexName",
 		},
 		MetricConfig: map[string]string{
-			"BCMetricGateway": "http://gateway",
+			"BCMetricGateway": "http://www.example.com/",
+		},
+		ResourceLimits: task.ResourceLimits{
+			Emqx: task.ResourceLimit{
+				Requests: task.ResourceQuota{
+					CPU:    "250m",
+					Memory: "100Mi",
+				},
+				Limits: task.ResourceQuota{
+					CPU:    "500m",
+					Memory: "200Mi",
+				},
+			},
+			Telegraf: task.ResourceLimit{
+				Requests: task.ResourceQuota{
+					CPU:    "250m",
+					Memory: "100Mi",
+				},
+				Limits: task.ResourceQuota{
+					CPU:    "1000m",
+					Memory: "200Mi",
+				},
+			},
 		},
 	}
 	task.Deploy(msg)
