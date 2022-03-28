@@ -1,9 +1,9 @@
 package main
 
-const (
-	TASK_ID   = 1
-	NAMESPACE = "emqx-1"
-)
+// const (
+// 	TASK_ID   = 1
+// 	NAMESPACE = "emqx-1"
+// )
 
 const (
 	SEND_KUBE_CONFIG   = "SEND_KUBE_CONFIG"

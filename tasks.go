@@ -18,13 +18,7 @@ func emqxClusterStatus(status []byte) error {
 }
 
 func pullKubeConfigs(configs []byte) error {
-	c := task.KubeConfig{}
-
-	// if err := json.Unmarshal(configs, &c); err != nil {
-	// 	panic(err.Error())
-	// }
-
-	logger.Printf("---- kube configs: %+v\n", c)
+	logger.Println("---- receive kube-config recall")
 
 	return nil
 }

@@ -14,6 +14,7 @@ import (
 )
 
 var logger *log.Logger
+var mConfig *Config
 
 func init() {
 	writer1, err := os.OpenFile("logger.txt", os.O_WRONLY|os.O_CREATE, 0755)
@@ -25,13 +26,18 @@ func init() {
 	logger = log.New(io.MultiWriter(writer1, writer2), "", log.Lshortfile|log.LstdFlags)
 }
 
-type Config struct {
-	TaskMqConfig *taskmq.BCAsyncTaskConfig `yaml:"taskmq"`
+type MockConfig struct {
+	TaskID    uint64 `yaml:"task_id"`
+	Namespace string `yaml:"namespace"`
 }
 
-func getConfig(file string) *taskmq.BCAsyncTaskConfig {
-	b, err := ioutil.ReadFile(file)
+type Config struct {
+	TaskMqConfig *taskmq.BCAsyncTaskConfig `yaml:"taskmq"`
+	MockConfig   *MockConfig               `yaml:"mock"`
+}
 
+func initConfig(file string) {
+	b, err := ioutil.ReadFile(file)
 	if err != nil {
 		panic(err)
 	}
@@ -39,7 +45,7 @@ func getConfig(file string) *taskmq.BCAsyncTaskConfig {
 	if err := yaml.Unmarshal(b, cfg); err != nil {
 		panic(err)
 	}
-	return cfg.TaskMqConfig
+	mConfig = cfg
 }
 
 var tasks = map[string]interface{}{
@@ -61,8 +67,9 @@ var taskList = map[string]interface{}{
 }
 
 func main() {
-	config := getConfig("./conf.yaml")
-	taskmq.Server.CreateMachineryServer("test_worker", config)
+
+	initConfig("./conf.yaml")
+	taskmq.Server.CreateMachineryServer("test_worker", mConfig.TaskMqConfig)
 	role.RegisterDefaultTasks()
 	taskmq.Server.RegisterTasks(tasks)
 
@@ -82,23 +89,23 @@ func main() {
 
 		switch result {
 		case SEND_KUBE_CONFIG:
-			taskList[SEND_KUBE_CONFIG].(func(uint64))(TASK_ID)
+			taskList[SEND_KUBE_CONFIG].(func(uint64))(mConfig.MockConfig.TaskID)
 		case CREATE_DEPLOYMENT:
-			taskList[CREATE_DEPLOYMENT].(func(uint64, string))(TASK_ID, NAMESPACE)
+			taskList[CREATE_DEPLOYMENT].(func(uint64, string))(mConfig.MockConfig.TaskID, mConfig.MockConfig.Namespace)
 		case STOP_DEPLOYMENT:
-			taskList[STOP_DEPLOYMENT].(func(uint64, string))(TASK_ID, NAMESPACE)
+			taskList[STOP_DEPLOYMENT].(func(uint64, string))(mConfig.MockConfig.TaskID, mConfig.MockConfig.Namespace)
 		case START_DEPLOYMENT:
-			taskList[START_DEPLOYMENT].(func(uint64, string))(TASK_ID, NAMESPACE)
+			taskList[START_DEPLOYMENT].(func(uint64, string))(mConfig.MockConfig.TaskID, mConfig.MockConfig.Namespace)
 		case DELETE_DEPLOYMENT:
-			taskList[DELETE_DEPLOYMENT].(func(uint64, string))(TASK_ID, NAMESPACE)
+			taskList[DELETE_DEPLOYMENT].(func(uint64, string))(mConfig.MockConfig.TaskID, mConfig.MockConfig.Namespace)
 		case UPDATE_LICENSE:
-			taskList[UPDATE_LICENSE].(func(uint64, string))(TASK_ID, NAMESPACE)
+			taskList[UPDATE_LICENSE].(func(uint64, string))(mConfig.MockConfig.TaskID, mConfig.MockConfig.Namespace)
 		case UPDATE_CERTIFICATE:
-			taskList[UPDATE_CERTIFICATE].(func(uint64, string))(TASK_ID, NAMESPACE)
+			taskList[UPDATE_CERTIFICATE].(func(uint64, string))(mConfig.MockConfig.TaskID, mConfig.MockConfig.Namespace)
 		case UPDATE_IMAGE:
-			taskList[UPDATE_IMAGE].(func(uint64, string))(TASK_ID, NAMESPACE)
+			taskList[UPDATE_IMAGE].(func(uint64, string))(mConfig.MockConfig.TaskID, mConfig.MockConfig.Namespace)
 		case SCALE_UP:
-			taskList[SCALE_UP].(func(uint64, string))(TASK_ID, NAMESPACE)
+			taskList[SCALE_UP].(func(uint64, string))(mConfig.MockConfig.TaskID, mConfig.MockConfig.Namespace)
 		case EXIT:
 			return
 		}

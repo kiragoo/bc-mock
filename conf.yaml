@@ -2,3 +2,6 @@ taskmq:
   broker: "redis://localhost:6379"
   queue: "emqx-bc-tasksmq"
   heartbeat: false
+mock:
+  task_id: 2
+  namespace: "emqx-2"
