@@ -10,7 +10,7 @@ import (
 )
 
 func getKubeConfig() []byte {
-	config, err := os.ReadFile(filepath.Join(os.Getenv("HOME"), ".kube", "config"))
+	config, err := os.ReadFile(filepath.Join(os.Getenv("HOME"), ".kube", "config.minikube"))
 	if err != nil {
 		panic(err.Error())
 	}
@@ -27,12 +27,13 @@ func sendKubeConfig(id uint64) {
 
 func createDeployment(id uint64, ns string) {
 	msg := &task.Task{
-		TaskID:           id,
-		Type:             task.TaskCreateDeployment,
-		Namespace:        ns,
-		ClusterID:        "cluster-" + strconv.FormatUint(id, 10),
-		Image:            "emqx/emqx-ee:4.4.0",
-		Replicas:         3,
+		TaskID:    id,
+		Type:      task.TaskCreateDeployment,
+		Namespace: ns,
+		ClusterID: "cluster-" + strconv.FormatUint(id, 10),
+		Image:     "emqx/emqx-ee:4.4.0",
+		Replicas:  3,
+		// StorageClassName: "standard",
 		StorageClassName: "standard",
 		StorageClassSize: "20Mi",
 		Env: map[string]string{
@@ -53,21 +54,21 @@ func createDeployment(id uint64, ns string) {
 		ResourceLimits: task.ResourceLimits{
 			Emqx: task.ResourceLimit{
 				Requests: task.ResourceQuota{
-					CPU:    "250m",
+					CPU:    "125m",
 					Memory: "100Mi",
 				},
 				Limits: task.ResourceQuota{
-					CPU:    "500m",
+					CPU:    "250m",
 					Memory: "200Mi",
 				},
 			},
 			Telegraf: task.ResourceLimit{
 				Requests: task.ResourceQuota{
-					CPU:    "250m",
+					CPU:    "125m",
 					Memory: "100Mi",
 				},
 				Limits: task.ResourceQuota{
-					CPU:    "1000m",
+					CPU:    "250m",
 					Memory: "200Mi",
 				},
 			},

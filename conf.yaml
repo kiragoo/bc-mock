@@ -3,5 +3,5 @@ taskmq:
   queue: "emqx-bc-tasksmq"
   heartbeat: false
 mock:
-  task_id: 2
-  namespace: "emqx-2"
+  task_id: 1
+  namespace: "emqx-1"
