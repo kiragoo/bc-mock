@@ -24,7 +24,7 @@ func emqxSvcStatus(status []byte) error {
 		panic(err.Error())
 	}
 
-	logger.Printf("---- emqx status: %+v\n", s)
+	logger.Printf("---- svc status: %+v\n", s)
 	return nil
 }
 
