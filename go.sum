@@ -170,6 +170,8 @@ github.com/emqx/emqx-bc-asynctasks v0.0.0-20220325033940-4116daa345dc h1:BgUQ4aD
 github.com/emqx/emqx-bc-asynctasks v0.0.0-20220325033940-4116daa345dc/go.mod h1:ha9I2A8T5hRrhSjfAIOGB6QmXgFsBqG0NDVNraq2tSg=
 github.com/emqx/emqx-bc-asynctasks v0.0.0-20220325072013-9f17f3af28cc h1:0dfBFWDGRyswbc7hd+DhDH1bpCIECB7aj/M9IGl9aO8=
 github.com/emqx/emqx-bc-asynctasks v0.0.0-20220325072013-9f17f3af28cc/go.mod h1:ha9I2A8T5hRrhSjfAIOGB6QmXgFsBqG0NDVNraq2tSg=
+github.com/emqx/emqx-bc-asynctasks v0.0.0-20220328102329-c61efbabb14d h1:JXSqVMTmhA5yubJQUDJwIf/lSMFqh3dnNGIy+sz+sz4=
+github.com/emqx/emqx-bc-asynctasks v0.0.0-20220328102329-c61efbabb14d/go.mod h1:ha9I2A8T5hRrhSjfAIOGB6QmXgFsBqG0NDVNraq2tSg=
 github.com/emqx/emqx-operator v0.0.0-20220310101507-130a683bbaa1 h1:ZQrip/FMoS26OkeVyNqkyaS92IgEXz25P9ZLBdbgwXM=
 github.com/emqx/emqx-operator v0.0.0-20220310101507-130a683bbaa1/go.mod h1:M/JpyUz3thbKodsajymtL1FYa5HB4PI17ueEk+kZdk8=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=

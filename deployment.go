@@ -10,7 +10,7 @@ import (
 )
 
 func getKubeConfig() []byte {
-	config, err := os.ReadFile(filepath.Join(os.Getenv("HOME"), ".kube", "config.minikube"))
+	config, err := os.ReadFile(filepath.Join(os.Getenv("HOME"), ".kube", "config"))
 	if err != nil {
 		panic(err.Error())
 	}
@@ -27,14 +27,13 @@ func sendKubeConfig(id uint64) {
 
 func createDeployment(id uint64, ns string) {
 	msg := &task.Task{
-		TaskID:    id,
-		Type:      task.TaskCreateDeployment,
-		Namespace: ns,
-		ClusterID: "cluster-" + strconv.FormatUint(id, 10),
-		Image:     "emqx/emqx-ee:4.4.0",
-		Replicas:  3,
-		// StorageClassName: "standard",
-		StorageClassName: "standard",
+		TaskID:           id,
+		Type:             task.TaskCreateDeployment,
+		Namespace:        ns,
+		ClusterID:        "cluster-" + strconv.FormatUint(id, 10),
+		Image:            "emqx/emqx-ee:4.4.0",
+		Replicas:         3,
+		StorageClassName: "local-path",
 		StorageClassSize: "20Mi",
 		Env: map[string]string{
 			"EMQX_CLUSTER__K8S__NAMESPACE": ns,

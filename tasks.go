@@ -17,6 +17,17 @@ func emqxClusterStatus(status []byte) error {
 	return nil
 }
 
+func emqxSvcStatus(status []byte) error {
+	s := task.EmqxClusterSvc{}
+
+	if err := json.Unmarshal(status, &s); err != nil {
+		panic(err.Error())
+	}
+
+	logger.Printf("---- emqx status: %+v\n", s)
+	return nil
+}
+
 func pullKubeConfigs(configs []byte) error {
 	logger.Println("---- receive kube-config recall")
 

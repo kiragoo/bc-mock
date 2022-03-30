@@ -52,6 +52,7 @@ var tasks = map[string]interface{}{
 	task.TASK_EMQX_CLUSTER_UPDATE: emqxClusterStatus,
 	task.RECALL_KUBECONFIG:        pullKubeConfigs,
 	task.TASK_BC_UPDATE_TASK:      deploymentStatus,
+	task.TASK_EMQX_SVC:            emqxSvcStatus,
 }
 
 var taskList = map[string]interface{}{
