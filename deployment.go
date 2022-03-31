@@ -10,7 +10,7 @@ import (
 )
 
 func getKubeConfig() []byte {
-	config, err := os.ReadFile(filepath.Join(os.Getenv("HOME"), ".kube", "config.minikube"))
+	config, err := os.ReadFile(filepath.Join(os.Getenv("HOME"), ".kube", "config"))
 	if err != nil {
 		panic(err.Error())
 	}
@@ -27,13 +27,12 @@ func sendKubeConfig(id uint64) {
 
 func createDeployment(id uint64, ns string) {
 	msg := &task.Task{
-		TaskID:    id,
-		Type:      task.TaskCreateDeployment,
-		Namespace: ns,
-		ClusterID: "cluster-" + strconv.FormatUint(id, 10),
-		Image:     "emqx/emqx-ee:4.4.0",
-		Replicas:  3,
-		// StorageClassName: "standard",
+		TaskID:           id,
+		Type:             task.TaskCreateDeployment,
+		Namespace:        ns,
+		ClusterID:        "cluster-" + strconv.FormatUint(id, 10),
+		Image:            "emqx/emqx-ee:4.4.0",
+		Replicas:         3,
 		StorageClassName: "standard",
 		StorageClassSize: "20Mi",
 		Env: map[string]string{
@@ -73,6 +72,15 @@ func createDeployment(id uint64, ns string) {
 				},
 			},
 		},
+		// Network: task.NetworkConfig{
+		// 	Type: "ClusterIP",
+		// 	Config: task.PortConfig{
+		// 		ServicePort: v1beta2.Ports{
+		// 			MQTT:  8081,
+		// 			MQTTS: 8081,
+		// 		},
+		// 	},
+		// },
 	}
 	task.Deploy(msg)
 }
