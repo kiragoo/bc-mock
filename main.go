@@ -27,8 +27,10 @@ func init() {
 }
 
 type MockConfig struct {
-	TaskID    uint64 `yaml:"task_id"`
-	Namespace string `yaml:"namespace"`
+	TaskID        uint64 `yaml:"task_id"`
+	Namespace     string `yaml:"namespace"`
+	EsUrl         string `yaml:"es_url"`
+	MetricGateway string `yaml:"metric_gateway"`
 }
 
 type Config struct {
@@ -52,6 +54,7 @@ var tasks = map[string]interface{}{
 	task.TASK_EMQX_CLUSTER_UPDATE: emqxClusterStatus,
 	task.RECALL_KUBECONFIG:        pullKubeConfigs,
 	task.TASK_BC_UPDATE_TASK:      deploymentStatus,
+	task.TASK_EMQX_SVC:            emqxSvcStatus,
 }
 
 var taskList = map[string]interface{}{

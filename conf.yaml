@@ -5,3 +5,7 @@ taskmq:
 mock:
   task_id: 1
   namespace: "emqx-1"
+  # es_url: "elasticsearch-master.default.svc:9200"
+  # metric_gateway: "http://10.0.0.240:8084/monitor/"
+  es_url: "http://139.224.110.115:8080/es9200/"
+  metric_gateway: "http://www.example.com/"

@@ -3,7 +3,7 @@ module bc-mock
 go 1.17
 
 require (
-	github.com/emqx/emqx-bc-asynctasks v0.0.0-20220325072013-9f17f3af28cc
+	github.com/emqx/emqx-bc-asynctasks v0.0.0-20220328102329-c61efbabb14d
 	github.com/emqx/emqx-operator v0.0.0-20220310101507-130a683bbaa1
 	github.com/manifoldco/promptui v0.9.0
 	gopkg.in/yaml.v2 v2.4.0
