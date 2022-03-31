@@ -27,12 +27,13 @@ func sendKubeConfig(id uint64) {
 
 func createDeployment(id uint64, ns string) {
 	msg := &task.Task{
-		TaskID:           id,
-		Type:             task.TaskCreateDeployment,
-		Namespace:        ns,
-		ClusterID:        "cluster-" + strconv.FormatUint(id, 10),
-		Image:            "emqx/emqx-ee:4.4.0",
-		Replicas:         3,
+		TaskID:    id,
+		Type:      task.TaskCreateDeployment,
+		Namespace: ns,
+		ClusterID: "cluster-" + strconv.FormatUint(id, 10),
+		Image:     "emqx/emqx-ee:4.4.0",
+		Replicas:  3,
+		// StorageClassName: "standard",
 		StorageClassName: "local-path",
 		StorageClassSize: "20Mi",
 		Env: map[string]string{
@@ -42,13 +43,13 @@ func createDeployment(id uint64, ns string) {
 		// License:     []byte(LIC),
 		LogType: "external",
 		LogConfig: map[string]string{
-			"EsUrl":       "http://139.224.110.115:8080/es9200/",
+			"EsUrl":       mConfig.MockConfig.EsUrl,
 			"EsUsername":  "esUsername",
 			"EsPassword":  "esPassword",
 			"EsIndexName": "EsIndexName",
 		},
 		MetricConfig: map[string]string{
-			"BCMetricGateway": "http://www.example.com/",
+			"BCMetricGateway": mConfig.MockConfig.MetricGateway,
 		},
 		ResourceLimits: task.ResourceLimits{
 			Emqx: task.ResourceLimit{
@@ -91,13 +92,13 @@ func startDeployment(id uint64, ns string) {
 		},
 		LogType: "external",
 		LogConfig: map[string]string{
-			"EsUrl":       "http://139.224.110.115:8080/es9200/",
+			"EsUrl":       mConfig.MockConfig.EsUrl,
 			"EsUsername":  "esUsername",
 			"EsPassword":  "esPassword",
 			"EsIndexName": "EsIndexName",
 		},
 		MetricConfig: map[string]string{
-			"BCMetricGateway": "http://www.example.com/",
+			"BCMetricGateway": mConfig.MockConfig.MetricGateway,
 		},
 		ResourceLimits: task.ResourceLimits{
 			Emqx: task.ResourceLimit{

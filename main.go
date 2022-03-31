@@ -27,8 +27,10 @@ func init() {
 }
 
 type MockConfig struct {
-	TaskID    uint64 `yaml:"task_id"`
-	Namespace string `yaml:"namespace"`
+	TaskID        uint64 `yaml:"task_id"`
+	Namespace     string `yaml:"namespace"`
+	EsUrl         string `yaml:"es_url"`
+	MetricGateway string `yaml:"metric_gateway"`
 }
 
 type Config struct {
